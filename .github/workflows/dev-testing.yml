@@ -1,0 +1,34 @@
+name: Dev Testing 🔎
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build and Testing
+    runs-on: ubuntu-latest
+    environment: dev-testing
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Buat .env file berdasarkan secret
+      - name: Create .env file
+        run: |
+          echo "MINIO_DEV_ENDPOINT=${{ secrets.MINIO_DEV_ENDPOINT }}" >> .env
+          echo "MINIO_DEV_ACCESS_KEY=${{ secrets.MINIO_DEV_ACCESS_KEY }}" >> .env
+          echo "MINIO_DEV_SECRET_KEY=${{ secrets.MINIO_DEV_SECRET_KEY }}" >> .env
+
+      # Step 3: Jalankan aplikasi menggunakan Docker Compose
+      - name: Run application
+        run: sudo docker compose up --build --detach pacmusic-dev
+
+      # Step 4: Test Hit Endpoint
+      - name: Test Hit Endpoint
+        run: |
+          sleep 10
+          curl http://localhost:5000

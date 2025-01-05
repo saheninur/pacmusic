@@ -34,15 +34,15 @@ jobs:
             fi
 
             # Generate .env file
-            echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
-            echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
-            echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
-            echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
+            echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env.staging
+            echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env.staging
+            echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env.staging
+            echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env.staging
 
             cat .env
 
             # Start application
-            sudo docker-compose up --build --detach pacmusic-stg
+            sudo docker-compose --env-file .env.staging up --build --detach pacmusic-stg
 
       # Step 2: Test Hit Endpoint
       - name: Test Hit Endpoint

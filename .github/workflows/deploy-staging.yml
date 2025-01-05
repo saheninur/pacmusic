@@ -20,27 +20,17 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME_STAGING }}
           key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
           script: |
-
-            # Verifikasi nilai variabel
-            echo "APP_STG_PATH is "${{ vars.APP_STG_PATH }}""
-
-            # Cek apakah path kosong
-            if [ -z "${{ vars.APP_STG_PATH }}" ]; then
-              echo "Error: APP_STG_PATH is not set or is empty."
-              exit 1
-            fi
-            
             # Check if APP_STG_PATH exists
-            if [ -d "${{ vars.APP_STG_PATH }}" ]; then
+            if [ -d "${{ vars.APP_STG_PATH }} ]; then
               echo "Directory exists. Proceeding with update..."
-              cd "${{ vars.APP_STG_PATH }}"
+              cd "${{ vars.APP_STG_PATH }}
               sudo docker-compose down pacmusic-stg
               git pull origin main
             else
               echo "Directory does not exist. Cloning repository..."
               ssh-keyscan github.com >> ~/.ssh/known_hosts
-              git clone ${{ secrets.GIT_URL }} "${{ vars.APP_STG_PATH }}"
-              cd "${{ vars.APP_STG_PATH }}"
+              git clone ${{ secrets.GIT_URL }} "${{ vars.APP_STG_PATH }}
+              cd "${{ vars.APP_STG_PATH }}
             fi
 
             # Generate .env file

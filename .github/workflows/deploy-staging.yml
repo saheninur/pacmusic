@@ -42,7 +42,8 @@ jobs:
             cat .env
 
             # Start application
-            sudo docker-compose-stg up --build --detach pacmusic-stg
+            # sudo docker-compose up --build --detach pacmusic-stg
+            sudo docker-compose -f docker-compose.staging.yml up --build --detach pacmusic-stg
             sudo docker logs pacmusic-stg
 
       # Step 2: Test Hit Endpoint

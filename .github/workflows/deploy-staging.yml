@@ -34,6 +34,7 @@ jobs:
             fi
 
             # Generate .env file
+            run: |
             echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
             echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
             echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env

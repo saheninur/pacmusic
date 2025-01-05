@@ -39,6 +39,8 @@ jobs:
             echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
             echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
 
+            cat .env
+
             # Start application
             sudo docker-compose up --build --detach pacmusic-stg
 

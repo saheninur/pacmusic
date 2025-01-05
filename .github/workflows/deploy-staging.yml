@@ -42,12 +42,6 @@ jobs:
             # Start application
             sudo docker-compose up --build --detach pacmusic-stg
 
-          - name: Debug secrets
-            run: |
-              echo "APP_STG_PORT is set to: ${{ secrets.APP_STG_PORT }}"
-              echo "MINIO_STG_ENDPOINT is set to: ${{ secrets.MINIO_STG_ENDPOINT }}"
-
-
       # Step 2: Test Hit Endpoint
       - name: Test Hit Endpoint
         run: |

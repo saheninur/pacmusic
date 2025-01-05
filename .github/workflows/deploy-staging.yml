@@ -34,7 +34,6 @@ jobs:
             fi
 
             # Generate .env file
-            run: |
             echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
             echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
             echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
@@ -42,6 +41,12 @@ jobs:
 
             # Start application
             sudo docker-compose up --build --detach pacmusic-stg
+
+          - name: Debug secrets
+          run: |
+            echo "APP_STG_PORT is set to: ${{ secrets.APP_STG_PORT }}"
+            echo "MINIO_STG_ENDPOINT is set to: ${{ secrets.MINIO_STG_ENDPOINT }}"
+
 
       # Step 2: Test Hit Endpoint
       - name: Test Hit Endpoint

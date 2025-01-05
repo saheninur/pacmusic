@@ -43,6 +43,7 @@ jobs:
 
             # Start application
             sudo docker-compose up --build --detach pacmusic-stg
+            sudo docker logs pacmusic-stg
 
       # Step 2: Test Hit Endpoint
       - name: Test Hit Endpoint

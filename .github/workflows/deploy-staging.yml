@@ -1,0 +1,49 @@
+name: Deploy Staging 🚀
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-staging:
+    name: Deploy to Staging Server
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      # Step 1: Run Deployment Script via SSH
+      - name: Run Deployment Script via SSH
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.SSH_HOST_STAGING }}
+          username: ${{ secrets.SSH_USER_NAME_STAGING }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
+          script: |
+            # Check if APP_STG_PATH exists
+            if [ -d "$APP_STG_PATH" ]; then
+              echo "Directory exists. Proceeding with update..."
+              cd "$APP_STG_PATH"
+              sudo docker-compose down pacmusic-stg
+              git pull origin main
+            else
+              echo "Directory does not exist. Cloning repository..."
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              git clone ${{ secrets.GIT_URL }} "$APP_STG_PATH"
+              cd "$APP_STG_PATH"
+            fi
+
+            # Generate .env file
+            echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
+            echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
+            echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
+            echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
+
+            # Start application
+            sudo docker-compose up --build --detach pacmusic-stg
+
+      # Step 2: Test Hit Endpoint
+      - name: Test Hit Endpoint
+        run: |
+          sleep 10
+          curl ${{ secrets.STG_URL }}

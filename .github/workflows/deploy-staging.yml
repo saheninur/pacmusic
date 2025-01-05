@@ -20,6 +20,16 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME_STAGING }}
           key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
           script: |
+
+            # Verifikasi nilai variabel
+            echo "APP_STG_PATH is $APP_STG_PATH"
+
+            # Cek apakah path kosong
+            if [ -z "$APP_STG_PATH" ]; then
+              echo "Error: APP_STG_PATH is not set or is empty."
+              exit 1
+            fi
+            
             # Check if APP_STG_PATH exists
             if [ -d "$APP_STG_PATH" ]; then
               echo "Directory exists. Proceeding with update..."

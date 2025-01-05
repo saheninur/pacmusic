@@ -27,14 +27,14 @@ jobs:
           port: ${{ secrets.APP_PROD_PORT }}
           script: |
             # Check if APP_PROD_PATH exists
-            if [ -d "${{ vars.APP_PROD_PATH }} ]; then
-              cd ${{ secrets.APP_PROD_PATH }}
+            if [ -d "${{ vars.APP_PROD_PATH }}" ]; then
+              cd ${{ secrets.APP_PROD_PATH }}"
               sudo docker compose down pacmusic-prod
               git pull origin main
             else
               ssh-keyscan github.com >> ~/.ssh/known_hosts
-              git clone ${{ secrets.GIT_URL }} "${{ vars.APP_PROD_PATH }}
-              cd "${{ vars.APP_PROD_PATH }}
+              git clone ${{ secrets.GIT_URL }} "${{ vars.APP_PROD_PATH }}"
+              cd "${{ vars.APP_PROD_PATH }}"
             fi
 
             # Generate .env file

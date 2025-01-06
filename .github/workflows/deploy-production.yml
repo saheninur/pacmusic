@@ -16,50 +16,14 @@ jobs:
       # Step 1: Checkout Repository
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      # Step 2: Check Server Connectivity
-      - name: Check Server Connectivity
-        run: |
-          echo "Pinging the production server..."
-          if ! ping -c 4 ${{ secrets.SSH_HOST_PRODUCTION }}; then
-            echo "Ping failed! Server is unreachable."
-            exit 1
-          else
-            echo "Ping successful."
-          fi
-
-          echo "Testing SSH port..."
-          if ! nc -zv ${{ secrets.SSH_HOST_PRODUCTION }} ${{ secrets.APP_PROD_PORT }}; then
-            echo "Port ${{ secrets.APP_PROD_PORT }} is not accessible."
-            exit 1
-          else
-            echo "Port ${{ secrets.APP_PROD_PORT }} is open."
-          fi
-
-      # Step 3: Check Firewall Status (if applicable)
-      - name: Check Firewall Status (UFW)
-        run: |
-          echo "Checking firewall status..."
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }} ${{ secrets.SSH_USER_NAME_PRODUCTION }}@$${{ secrets.SSH_HOST_PRODUCTION }} "sudo ufw status"
-          
-          # Alternatively, if using another firewall or iptables, you can check that too
-          # ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }} ${{ secrets.SSH_USER_NAME_PRODUCTION }}@$${{ secrets.SSH_HOST_PRODUCTION }} "sudo iptables -L"
-
-      # Step 4: Check Docker Containers
-      - name: Check Running Docker Containers
-        run: |
-          echo "Checking Docker containers status..."
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }} ${{ secrets.SSH_USER_NAME_PRODUCTION }}@$${{ secrets.SSH_HOST_PRODUCTION }} "docker ps" || (echo "Docker is not running"; exit 1)
-      
-      # Step 5: Run Deployment Script via SSH
+     
+      # Step 2: Run Deployment Script via SSH
       - name: Deploy to Production Server via SSH
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST_PRODUCTION }}
           username: ${{ secrets.SSH_USER_NAME_PRODUCTION }}
           key: ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}
-          port: ${{ secrets.APP_PROD_PORT }}
-          debug: true  # Debugging untuk melihat output lebih banyak
           script: |
             # Check if APP_PROD_PATH exists
             if [ -d "${{ vars.APP_PROD_PATH }}" ]; then

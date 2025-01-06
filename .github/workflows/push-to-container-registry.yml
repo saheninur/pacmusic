@@ -30,8 +30,8 @@ jobs:
       - name: Build and Push Images
         uses: docker/build-push-action@v4
         with:
-          context: ./app
-          dockerfile: ./app/Dockerfile
+          context: .
+          dockerfile: ./app
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/pacmusic:${{ github.ref_name }}

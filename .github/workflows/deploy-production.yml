@@ -17,7 +17,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Run Deployment Script via SSH
+      # Step 2: Check Server Connectivity
+      - name: Check Server Connectivity
+        run: |
+          echo "Pinging the production server..."
+          ping -c 4 ${{ secrets.SSH_HOST_PRODUCTION }} || (echo "Ping failed"; exit 1)
+          
+          echo "Checking if the server is reachable via curl..."
+          curl -v http://${{ secrets.SSH_HOST_PRODUCTION }} --connect-timeout 5 || (echo "Curl failed"; exit 1)
+
+      # Step 3: Run Deployment Script via SSH
       - name: Deploy to Production Server via SSH
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -28,7 +37,7 @@ jobs:
           script: |
             # Check if APP_PROD_PATH exists
             if [ -d "${{ vars.APP_PROD_PATH }}" ]; then
-              cd ${{ secrets.APP_PROD_PATH }}"
+              cd ${{ vars.APP_PROD_PATH }}
               sudo docker compose down pacmusic-prod
               git pull origin main
             else
@@ -48,7 +57,7 @@ jobs:
             # Build and start the application
             sudo docker compose up --build --detach pacmusic-prod
 
-      # Step 3: Test Endpoint
+      # Step 4: Test Production Endpoint
       - name: Test Production Endpoint
         run: |
           curl -f ${{ secrets.PROD_URL }}

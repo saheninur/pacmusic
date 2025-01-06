@@ -22,9 +22,10 @@ jobs:
             # Step 1: Update Docker to ensure compatibility
             echo "Updating Docker..."
             sudo apt-get update
-            sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io || true
 
             # Step 2: Check and prepare the application directory
+            echo "Checking application directory..."
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
               cd "${{ vars.APP_STG_PATH }}"
@@ -39,13 +40,13 @@ jobs:
 
             # Step 3: Create .env file
             echo "Creating .env file..."
-            run: |
-              echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
-              echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
-              echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
-              echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
+            echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
+            echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
+            echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
+            echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
 
             # Step 4: Start the application
+            echo "Starting application..."
             sudo docker compose up --build --detach pacmusic-stg
 
       - name: Test Hit Endpoint

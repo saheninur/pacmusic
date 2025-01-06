@@ -12,7 +12,6 @@ jobs:
     environment: staging
 
     steps:
-      # Step 1: Run Deployment Script via SSH
       - name: Run Deployment Script via SSH
         uses: appleboy/ssh-action@v0.1.9
         with:
@@ -20,7 +19,12 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME_STAGING }}
           key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
           script: |
-            # Check if APP_STG_PATH exists
+            # Step 1: Update Docker to ensure compatibility
+            echo "Updating Docker..."
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+            # Step 2: Check and prepare the application directory
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
               cd "${{ vars.APP_STG_PATH }}"
@@ -33,26 +37,17 @@ jobs:
               cd "${{ vars.APP_STG_PATH }}"
             fi
 
-            # Generate .env file
-            echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
-            echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
-            echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
-            echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
-            cat .env
+            # Step 3: Create .env file
+            echo "Creating .env file..."
+            run: |
+              echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
+              echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
+              echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
+              echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
 
-            # Create docker-compose.override.yml
-            echo "version: '3'" > docker-compose.override.yml
-            echo "services:" >> docker-compose.override.yml
-            echo "  pacmusic-dev:" >> docker-compose.override.yml
-            echo "    entrypoint: '/bin/true'" >> docker-compose.override.yml
-            echo "  pacmusic-prod:" >> docker-compose.override.yml
-            echo "    entrypoint: '/bin/true'" >> docker-compose.override.yml
+            # Step 4: Start the application
+            sudo docker compose up --build --detach pacmusic-stg
 
-            # Start application
-            sudo docker compose -f docker-compose.yml -f docker-compose.override.yml up --build --detach pacmusic-stg
-            sudo docker logs pacmusic-stg
-
-      # Step 2: Test Hit Endpoint
       - name: Test Hit Endpoint
         run: |
           sleep 10

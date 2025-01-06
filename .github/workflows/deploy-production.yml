@@ -22,9 +22,9 @@ jobs:
         run: |
           echo "Pinging the production server..."
           ping -c 4 ${{ secrets.SSH_HOST_PRODUCTION }} || (echo "Ping failed"; exit 1)
-          
-          echo "Checking if the server is reachable via curl..."
-          curl -v http://${{ secrets.SSH_HOST_PRODUCTION }} --connect-timeout 5 || (echo "Curl failed"; exit 1)
+      
+          echo "Testing SSH port..."
+          nc -zv ${{ secrets.SSH_HOST_PRODUCTION }} ${{ secrets.APP_PROD_PORT }} || (echo "Port test failed"; exit 1)
 
       # Step 3: Run Deployment Script via SSH
       - name: Deploy to Production Server via SSH
@@ -34,6 +34,7 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME_PRODUCTION }}
           key: ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}
           port: ${{ secrets.APP_PROD_PORT }}
+          debug: true  # Debugging untuk melihat output lebih banyak
           script: |
             # Check if APP_PROD_PATH exists
             if [ -d "${{ vars.APP_PROD_PATH }}" ]; then

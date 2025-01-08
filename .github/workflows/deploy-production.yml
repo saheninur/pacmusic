@@ -11,7 +11,6 @@ jobs:
     name: Deploy to Production Server
     runs-on: ubuntu-latest
     environment: production
-
     steps:
       # Step 0: Tunggu jika tag baru belum tersedia di registry Docker (jika menggunakan Docker Registry)
       - name: Wait for Docker image tag to be available

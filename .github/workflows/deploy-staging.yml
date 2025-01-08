@@ -19,13 +19,19 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME_STAGING }}
           key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
           script: |
+            - name: Clear DNS cache
+              run: |
+                sudo systemctl restart systemd-resolved
+                
             # Step 1: Check and prepare the application directory
             echo "Checking application directory..."
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
               cd "${{ vars.APP_STG_PATH }}"
               ssh-keygen -R 54.255.86.78
+              ssh-keyscan -H ${{ secrets.SSH_HOST_STAGING }} >> ~/.ssh/known_hosts
               cat ~/.ssh/known_hosts | grep 54.255.86.78
+              cat ~/.ssh/known_hosts | grep 54.169.176.157
               sudo docker compose down pacmusic-stg
               git pull origin main
             else

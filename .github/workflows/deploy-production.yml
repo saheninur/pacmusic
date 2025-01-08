@@ -27,6 +27,7 @@ jobs:
           script: |
             # Check if APP_PROD_PATH exists
             if [ -d "${{ vars.APP_PROD_PATH }}" ]; then
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
               cd ${{ vars.APP_PROD_PATH }}
               sudo docker compose down pacmusic-prod
               git pull origin main

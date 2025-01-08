@@ -12,21 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      # Step 0: Tunggu jika tag baru belum tersedia di registry Docker (jika menggunakan Docker Registry)
-      - name: Wait for Docker image tag to be available
-        run: |
-          APP_TAG="${{ github.event.release.tag_name }}"
-          REGISTRY="docker.io"
-          APP_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/pacmusic"
-
-      # Cek apakah image dengan tag yang sesuai sudah tersedia di registry
-          echo "Waiting for Docker image ${APP_IMAGE}:${APP_TAG}..."
-          while ! curl --silent --fail "https://${REGISTRY}/v2/${APP_IMAGE}/manifests/${APP_TAG}" > /dev/null; do
-            echo "Image ${APP_IMAGE}:${APP_TAG} not found. Retrying in 30 seconds..."
-            sleep 30
-          done
-          echo "Image ${APP_IMAGE}:${APP_TAG} is now available."
-
       # Step 1: Checkout Repository
       - name: Checkout repository
         uses: actions/checkout@v3

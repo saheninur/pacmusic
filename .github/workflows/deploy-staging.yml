@@ -23,20 +23,8 @@ jobs:
             echo "Checking application directory..."
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
-              cd "${{ vars.APP_STG_PATH }}"
-              sudo systemctl restart systemd-resolved
-              
-              
-              # Add new IP address to known_hosts
-              ssh-keyscan 54.169.176.157 >> ~/.ssh/known_hosts
               ssh-keyscan github.com >> ~/.ssh/known_hosts
-              # Clear SSH cache
-              ssh-add -D
-
-              # Verify that new IP is added correctly
-              cat ~/.ssh/known_hosts | grep 54.169.176.157
-
-              # Stop and remove old containers
+              cd "${{ vars.APP_STG_PATH }}"
               sudo docker compose down pacmusic-stg
               git pull origin main
             else
@@ -60,7 +48,4 @@ jobs:
       - name: Test Hit Endpoint
         run: |
           sleep 10
-          # Verifikasi DNS dan pastikan IP yang benar digunakan
-          nslookup ${{ secrets.STG_URL }}
-          # Test hit endpoint
           curl ${{ secrets.STG_URL }}

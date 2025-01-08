@@ -26,14 +26,14 @@ jobs:
               cd "${{ vars.APP_STG_PATH }}"
               sudo systemctl restart systemd-resolved
               
-              # Remove old IP address from known_hosts
-              ssh-keygen -R 54.255.86.78
+              
               # Add new IP address to known_hosts
               ssh-keyscan 54.169.176.157 >> ~/.ssh/known_hosts
               ssh-keyscan github.com >> ~/.ssh/known_hosts
+              # Clear SSH cache
+              ssh-add -D
 
-              # Check and remove any old entries
-              cat ~/.ssh/known_hosts | grep 54.255.86.78
+              # Verify that new IP is added correctly
               cat ~/.ssh/known_hosts | grep 54.169.176.157
 
               # Stop and remove old containers
@@ -60,4 +60,7 @@ jobs:
       - name: Test Hit Endpoint
         run: |
           sleep 10
+          # Verifikasi DNS dan pastikan IP yang benar digunakan
+          nslookup ${{ secrets.STG_URL }}
+          # Test hit endpoint
           curl ${{ secrets.STG_URL }}

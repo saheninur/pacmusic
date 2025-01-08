@@ -16,7 +16,7 @@ jobs:
       # Step 1: Checkout Repository
       - name: Checkout repository
         uses: actions/checkout@v3
-     
+
       # Step 2: Run Deployment Script via SSH
       - name: Deploy to Production Server via SSH
         uses: appleboy/ssh-action@v0.1.6
@@ -29,24 +29,8 @@ jobs:
             # Check if APP_PROD_PATH exists
             if [ -d "${{ vars.APP_PROD_PATH }}" ]; then
               ssh-keyscan github.com >> ~/.ssh/known_hosts
-              cd ${{ vars.APP_PROD_PATH }}
-              
-              # Show current release version
-              echo "Current Release Version:"
-              git describe --tags --always || echo "No tags found in git history"
-              
-              # Stop and remove only the 'pacmusic-prod' service
+              cd ${{ secrets.APP_PROD_PATH }}"
               sudo docker compose down pacmusic-prod
-              
-              # Optionally: remove related Docker images and volumes if you want to clean up
-              sudo docker image prune -f
-              sudo docker volume prune -f
-              sudo docker system prune -f
-
-              # Remove application directory (if needed, for cleanup)
-              sudo rm -rf ${{ vars.APP_PROD_PATH }}
-              
-              # Update the repo and pull latest changes
               git pull origin main
             else
               ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -65,8 +49,7 @@ jobs:
             # Build and start the application
             sudo docker compose up --build --detach pacmusic-prod
 
-      # Step 6: Test Production Endpoint
+      # Step 3: Test Endpoint
       - name: Test Production Endpoint
         run: |
-          echo "Testing production endpoint..."
           curl -f ${{ secrets.PROD_URL }}

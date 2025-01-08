@@ -19,25 +19,7 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME_STAGING }}
           key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
           script: |
-            # Step 1: Update Docker to ensure compatibility
-            echo "Updating Docker..."
-            sudo apt-get update
-            sudo apt-get remove docker docker-engine docker.io containerd runc
-            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-            sudo apt-get update
-            sudo apt-get install docker-ce docker-ce-cli containerd.io
-
-            # Install Docker Compose plugin
-            echo "Installing Docker Compose plugin..."
-            sudo apt-get install -y docker-compose-plugin
-
-            # Verifikasi Docker
-            docker --version
-            docker compose version
-
-            # Step 2: Check and prepare the application directory
+            # Step 1: Check and prepare the application directory
             echo "Checking application directory..."
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
@@ -51,14 +33,14 @@ jobs:
               cd "${{ vars.APP_STG_PATH }}"
             fi
 
-            # Step 3: Create .env file
+            # Step 2: Create .env file
             echo "Creating .env file..."
             echo "APP_STG_PORT=${{ secrets.APP_STG_PORT }}" > .env
             echo "MINIO_STG_ENDPOINT=${{ secrets.MINIO_STG_ENDPOINT }}" >> .env
             echo "MINIO_STG_ACCESS_KEY=${{ secrets.MINIO_STG_ACCESS_KEY }}" >> .env
             echo "MINIO_STG_SECRET_KEY=${{ secrets.MINIO_STG_SECRET_KEY }}" >> .env
 
-            # Step 4: Start the application
+            # Step 3: Start the application
             echo "Starting application..."
             sudo docker compose up --build --detach pacmusic-stg
 

@@ -24,6 +24,8 @@ jobs:
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
               cd "${{ vars.APP_STG_PATH }}"
+              ssh-keygen -R 54.255.86.78
+              cat ~/.ssh/known_hosts | grep 54.255.86.78
               sudo docker compose down pacmusic-stg
               git pull origin main
             else

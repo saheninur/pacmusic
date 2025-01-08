@@ -23,7 +23,6 @@ jobs:
             echo "Checking application directory..."
             if [ -d "${{ vars.APP_STG_PATH }}" ]; then
               echo "Directory exists. Proceeding with update..."
-              ssh-keyscan github.com >> ~/.ssh/known_hosts
               cd "${{ vars.APP_STG_PATH }}"
               sudo docker compose down pacmusic-stg
               git pull origin main

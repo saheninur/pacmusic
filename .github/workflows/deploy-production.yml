@@ -16,7 +16,7 @@ jobs:
       # Step 0: Tunggu jika tag baru belum tersedia di registry Docker (jika menggunakan Docker Registry)
       - name: Wait for Docker image tag to be available
         run: |
-          APP_TAG="${{ env.TAG_NAME }}"
+          APP_TAG="${{ github.event.release.tag_name }}"
           REGISTRY="docker.io"
           APP_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/pacmusic"
 

@@ -24,7 +24,6 @@ jobs:
           host: ${{ secrets.SSH_HOST_PRODUCTION }}
           username: ${{ secrets.SSH_USER_NAME_PRODUCTION }}
           key: ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}
-          port: ${{ secrets.APP_PROD_PORT }}
           script: |
             # Check if APP_PROD_PATH exists
             if [ -d "${{ vars.APP_PROD_PATH }}" ]; then

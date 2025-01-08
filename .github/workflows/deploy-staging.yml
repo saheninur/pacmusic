@@ -35,7 +35,7 @@ jobs:
 
             # Verifikasi Docker
             docker --version
-            docker compose --version
+            docker compose version
 
             # Step 2: Check and prepare the application directory
             echo "Checking application directory..."
